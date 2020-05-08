@@ -1,0 +1,41 @@
+body {
+  background: url(image.jpg) repeat;
+
+  color: floralwhite;
+}
+.login {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+
+  background-color: #74482b;
+  border: 1px ;
+  opacity: 0.7;
+}
+
+a.sorted,
+a.href:link {
+  color: floralwhite;
+  text-decoration: none;
+}
+
+a.sorted,
+a.href:visited {
+  color: floralwhite;
+  text-decoration: none;
+}
+
+a.sorted,
+a.href:hover {
+  color: floralwhite;
+  text-decoration: underline;
+}
+
+a.sorted,
+a.href:active {
+  color: floralwhite;
+  text-decoration: underline;
+}
