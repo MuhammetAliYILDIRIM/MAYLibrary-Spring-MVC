@@ -32,14 +32,14 @@ public class UserSecurityService implements UserDetailsService {
 
         org.springframework.security.core.userdetails.User user1 =
                 new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),user.isNonDeleted(),true,true,user.isNonLocked(),
-                mapRolesToAuthorities(user.getRoles()));
+                        user.getPassword(), user.isNonDeleted(), true, true, user.isNonLocked(),
+                        mapRolesToAuthorities(user.getRoles()));
         return user1;
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+    public Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_"+role.getName()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
     }
 }

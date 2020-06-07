@@ -15,7 +15,7 @@ public interface BookService {
 
     void deleteBook(Integer bookId);
 
-    boolean borrowBook(String username,Integer bookId);
+    void borrowBook(String username, Integer bookId);
 
     void returnBook(Integer bookId);
 

@@ -13,24 +13,24 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class LibraryMvcApplication implements CommandLineRunner {
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(LibraryMvcApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(LibraryMvcApplication.class, args);
 
-	}
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		User user = new User();
-		user.setUsername("admin");
-		user.setPassword(passwordEncoder.encode("password"));
-		user.setRoles(Arrays.asList(new Role("ADMIN")));
-		user.setEmail("yildirimmuha@gmail.com");
-		userRepository.save(user);
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        User user = new User();
+        user.setUsername("admin");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRoles(Arrays.asList(new Role("ADMIN")));
+        user.setEmail("yildirimmuha@gmail.com");
+        userRepository.save(user);
+    }
 }

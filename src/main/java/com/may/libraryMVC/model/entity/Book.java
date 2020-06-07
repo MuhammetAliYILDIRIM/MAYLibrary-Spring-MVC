@@ -31,7 +31,7 @@ public class Book {
     }
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private List<Author> authors=new ArrayList<>();
+    private List<Author> authors = new ArrayList<>();
 
     @ManyToOne
     private User borrowedUser;

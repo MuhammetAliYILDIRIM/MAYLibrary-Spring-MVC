@@ -10,23 +10,27 @@ import java.util.Optional;
 
 public interface UserService {
 
-    void saveOrEditUser(UserRegistrationDTO userDTO);
+    User saveOrEditUser(UserRegistrationDTO userDTO);
 
 
     Page<UserDTO> getAllUsers(Pageable pageable);
 
-    Optional<UserDTO> getUserByUsername(String username);
+    UserDTO getUserByUsername(String username);
 
-    UserDTO convert(User user);
+    UserDTO convertUserToUserDTO(User user);
 
-    Optional<UserDTO> getUserByEmail(String email);
+    UserDTO getUserByEmail(String email);
 
-    boolean deleteUser(String username);
+    User deleteUser(String username);
 
-    boolean activateUser(String username);
+    User activateUser(String username);
 
-    boolean blockUser(String username);
+    User blockUser(String username);
 
-    boolean unBlockUser(String username);
+    User unBlockUser(String username);
+
+    boolean isUsernameUsed(String username);
+
+    boolean isEmailUsed(String email);
 
 }

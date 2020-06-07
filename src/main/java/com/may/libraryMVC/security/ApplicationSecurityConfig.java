@@ -38,16 +38,16 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/*.jpg","/*.css","/resources/**","/registration", "/login*","/console/**")
+                .antMatchers("/*.jpg", "/*.css", "/resources/**", "/registration", "/login*", "/console/**")
                 .permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST,"/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET,"/**").hasAnyRole("ADMIN","USER")
+                .antMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/home", true)
+                .defaultSuccessUrl("/", true)
                 .permitAll()
                 .and()
                 .logout()
@@ -56,9 +56,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login");
 
-             http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable();
     }
-
 
 
     @Bean

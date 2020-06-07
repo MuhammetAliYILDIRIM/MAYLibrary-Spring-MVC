@@ -95,14 +95,15 @@
                 <tr>
                     <th>Book</th>
                     <th>Return Date</th>
-                    <th>Action</th>
+                    <th  sec:authorize="hasRole('ROLE_USER')">Action</th>
                 </tr>
                 </thead>
                 <tr th:each="book : ${profile.books}">
                     <td><a class="href" th:href="${'/show/book'+book.id}" th:text="${book.title}"></a></td>
                     <td th:text="${book.returnDate}"></td>
                     <td>
-                        <a th:href="${'/book/return/'+book.id}" class="btn btn-lg btn-primary btn-sm btn-danger">Give
+                        <a th:href="${'/book/return/'+book.id}" class="btn btn-lg btn-primary btn-sm btn-danger"
+                           sec:authorize="hasRole('ROLE_USER')">Give
                             Back</a>
                     </td>
                 </tr>

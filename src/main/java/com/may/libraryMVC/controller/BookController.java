@@ -26,11 +26,6 @@ public class BookController {
     private final BookService bookService;
 
 
-    @ModelAttribute("allAuthors")
-    public List<Author> getAuthors() {
-        return authorService.getAllAuthors();
-    }
-
     @Autowired
     public BookController(AuthorService authorService, BookService bookService) {
         this.authorService = authorService;
@@ -41,7 +36,7 @@ public class BookController {
     public String getAllBooks(Model model, @PageableDefault(size = 10) @SortDefault("title") Pageable pageable) {
         model.addAttribute("books", bookService.getAllBooks(pageable));
 
-        return "/book/list";
+        return "book/list";
     }
 
     @RequestMapping("list/{authorId}")
@@ -50,7 +45,7 @@ public class BookController {
 
         model.addAttribute("books", bookService.getBooksByAuthorId(authorId, pageable));
 
-        return "/book/list";
+        return "book/list";
     }
 
     @RequestMapping("show/{bookId}")
@@ -68,30 +63,34 @@ public class BookController {
 
     @RequestMapping("edit/{bookId}")
     public String editBook(Model model, @PathVariable Integer bookId) {
+        model.addAttribute("allAuthors", authorService.getAllAuthors());
         model.addAttribute("book", bookService.getBookById(bookId));
         return "book/bookform";
     }
 
     @RequestMapping("new")
     public String newBook(Book book) {
+
         return "book/bookform";
     }
 
 
     @RequestMapping(value = "bookform", params = {"addAuthor"})
-    public String addAuthor(Book book, BindingResult bindingResult) {
-
+    public String addAuthor(Model model, Book book, BindingResult bindingResult) {
+        model.addAttribute("book", book);
+        model.addAttribute("allAuthors", authorService.getAllAuthors());
         book.getAuthors().add(new Author());
 
         return "book/bookform";
     }
 
     @RequestMapping(value = "bookform", params = {"removeAuthor"})
-    public String removeAuthor(Book book, BindingResult bindingResult,
+    public String removeAuthor(Book book, Model model, BindingResult bindingResult,
                                @RequestParam(value = "removeAuthor", required = false) Integer authorId) {
 
         book.getAuthors().remove(authorId.intValue());
-
+        model.addAttribute("book", book);
+        model.addAttribute("allAuthors", authorService.getAllAuthors());
         return "book/bookform";
     }
 
@@ -109,26 +108,16 @@ public class BookController {
     }
 
     @RequestMapping("borrow/{bookId}")
-    public String borrowBook(Principal principal, @PathVariable Integer bookId) throws Exception {
+    public String borrowBook(Principal principal, @PathVariable Integer bookId) {
 
-        if (!bookService.borrowBook(principal.getName(), bookId)) {
-            return "book/borrowerror";
-        }
-
-
+        bookService.borrowBook(principal.getName(), bookId);
         return "redirect:/book";
 
     }
 
     @RequestMapping("return/{bookId}")
-    public String returnBook(Principal principal, @PathVariable Integer bookId) throws Exception {
-        Book book = bookService.getBookById(bookId);
-        if(book.getBorrowedUser().getUsername().equals(principal.getName())) {
-            bookService.returnBook(bookId);
-        }else{
-            throw new Exception("unmatched request");
-        }
-
+    public String returnBook(Principal principal, @PathVariable Integer bookId){
+        bookService.returnBook(bookId);
         return "redirect:/profile";
     }
 

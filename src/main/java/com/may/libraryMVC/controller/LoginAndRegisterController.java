@@ -8,8 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 import javax.validation.Valid;
 
@@ -22,11 +20,6 @@ public class LoginAndRegisterController {
         this.userService = userService;
     }
 
-    @ModelAttribute("user")
-    public UserRegistrationDTO userDto() {
-        return new UserRegistrationDTO();
-    }
-
     @RequestMapping("login")
     public String login() {
 
@@ -35,25 +28,25 @@ public class LoginAndRegisterController {
 
 
     @RequestMapping("registration")
-    public String register() {
+    public String register(Model model) {
+        model.addAttribute("user", new UserRegistrationDTO());
 
-
-        return "registration";
+        return "register";
     }
-
 
 
     @RequestMapping(value = "registration", method = RequestMethod.POST)
     public String save(@ModelAttribute("user") @Valid UserRegistrationDTO userDTO, BindingResult result) {
 
-        if (userService.getUserByUsername(userDTO.getUsername()).isPresent()) {
+
+        if (userService.isUsernameUsed(userDTO.getUsername())) {
             result.rejectValue("username", null, "There is already an account registered with that username");
         }
-        if (userService.getUserByEmail(userDTO.getEmail()).isPresent()) {
+        if (userService.isEmailUsed(userDTO.getEmail())) {
             result.rejectValue("email", null, "There is already an account registered with that email");
         }
-        if(result.hasErrors()){
-            return "registration";
+        if (result.hasErrors()) {
+            return "register";
         }
         userService.saveOrEditUser(userDTO);
         return "redirect:/registration?success";

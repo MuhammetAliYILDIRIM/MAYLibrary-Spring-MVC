@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -44,38 +45,49 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getBookById(Integer bookId) {
-        return bookRepository.findById(bookId).orElse(null);
+        return bookRepository.getOne(bookId);
     }
 
 
     @Override
     public void deleteBook(Integer bookId) {
+        if (!bookRepository.findById(bookId).isPresent()) {
+            throw new RuntimeException("Book cannot be founded!");
+        }
         bookRepository.deleteById(bookId);
-
     }
 
 
     @Override
-    public boolean borrowBook(String username, Integer bookId) {
+    public void borrowBook(String username, Integer bookId) {
 
 
-        User borrowedUser = userRepository.findUserByUsername(username).get();
-        if (bookRepository.findBooksByBorrowedUserId(borrowedUser.getId()).size() > 2) {
-            return false;
+        Optional<User> borrowedUser = userRepository.findUserByUsername(username);
+        if (!borrowedUser.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
-        Book book = bookRepository.getOne(bookId);
-        book.setBorrowedUser(borrowedUser);
-        book.setReturnDate((LocalDate.now().plusWeeks(4)));
-        bookRepository.save(book);
-        return true;
+        if (bookRepository.findBooksByBorrowedUserId(borrowedUser.get().getId()).size() > 2) {
+            throw new RuntimeException("You have already borrowed 3 books!");
+        }
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (!book.isPresent()) {
+            throw new RuntimeException("Book cannot be founded!");
+        }
+        book.get().setBorrowedUser(borrowedUser.get());
+        book.get().setReturnDate((LocalDate.now().plusWeeks(4)));
+        bookRepository.save(book.get());
+
     }
 
     @Override
     public void returnBook(Integer bookId) {
-        Book book = bookRepository.getOne(bookId);
-        book.setReturnDate(null);
-        book.setBorrowedUser(null);
-        bookRepository.save(book);
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (!book.isPresent()) {
+            throw new RuntimeException("Book cannot be founded!");
+        }
+        book.get().setReturnDate(null);
+        book.get().setBorrowedUser(null);
+        bookRepository.save(book.get());
     }
 
 

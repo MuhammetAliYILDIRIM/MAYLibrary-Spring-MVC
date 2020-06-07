@@ -9,7 +9,6 @@ import com.may.libraryMVC.repositoy.UserRepository;
 import com.may.libraryMVC.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void saveOrEditUser(UserRegistrationDTO userRegistrationDTO) {
+    public User saveOrEditUser(UserRegistrationDTO userRegistrationDTO) {
         User user = new User();
         user.setUsername(userRegistrationDTO.getUsername());
         user.setFirstName(userRegistrationDTO.getFirstName());
@@ -42,78 +41,101 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
         user.setRoles(Arrays.asList(new Role("USER")));
 
-        userRepository.save(user);
-    }
+        return userRepository.save(user);
 
+    }
 
 
     @Override
     public Page<UserDTO> getAllUsers(Pageable pageable) {
 
-        return userRepository.findAll(pageable).map(this::convert);
+        return userRepository.findAll(pageable).map(this::convertUserToUserDTO);
     }
 
     @Override
-    public Optional<UserDTO> getUserByUsername(String username) {
+    public UserDTO getUserByUsername(String username) {
 
         Optional<User> user = userRepository.findUserByUsername(username);
-
-        return Optional.ofNullable(user.isPresent() ? convert(user.get()) : null);
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
+        }
+        return convertUserToUserDTO(user.get());
     }
 
     @Override
-    public Optional<UserDTO> getUserByEmail(String email) {
+    public UserDTO getUserByEmail(String email) {
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()) {
-            return Optional.of(convert(user.get()));
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
 
-        return Optional.empty();
+        return convertUserToUserDTO(user.get());
     }
 
     @Override
-    public boolean deleteUser(String username) {
+    public User deleteUser(String username) {
         Optional<User> user = userRepository.findUserByUsername(username);
-        if (user.isPresent()) {
-            user.get().setNonDeleted(false);
-            userRepository.save(user.get());
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
+        user.get().setNonDeleted(false);
+        return userRepository.save(user.get());
 
-        return false;
     }
 
     @Override
-    public boolean activateUser(String username) {
+    public User activateUser(String username) {
         Optional<User> user = userRepository.findUserByUsername(username);
-        if (user.isPresent()) {
-            user.get().setNonDeleted(true);
-            userRepository.save(user.get());
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
-        return false;
+        user.get().setNonDeleted(true);
+        return userRepository.save(user.get());
+
     }
 
     @Override
-    public boolean blockUser(String username) {
+    public User blockUser(String username) {
         Optional<User> user = userRepository.findUserByUsername(username);
-        if (user.isPresent()) {
-            user.get().setNonLocked(false);
-            userRepository.save(user.get());
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
-        return false;
+        user.get().setNonLocked(false);
+        return userRepository.save(user.get());
+
+
     }
 
     @Override
-    public boolean unBlockUser(String username) {
+    public User unBlockUser(String username) {
         Optional<User> user = userRepository.findUserByUsername(username);
-        if (user.isPresent()) {
-            user.get().setNonLocked(true);
-            userRepository.save(user.get());
+        if (!user.isPresent()) {
+            throw new RuntimeException("User cannot be founded!");
         }
-        return false;
+        user.get().setNonLocked(true);
+       return userRepository.save(user.get());
+
+
     }
 
     @Override
-    public UserDTO convert(User user) {
+    public boolean isUsernameUsed(String username) {
+        if (userRepository.findUserByUsername(username).isPresent())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public boolean isEmailUsed(String email) {
+        if (userRepository.findUserByEmail(email).isPresent())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public UserDTO convertUserToUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail(user.getEmail());
         userDTO.setUsername(user.getUsername());

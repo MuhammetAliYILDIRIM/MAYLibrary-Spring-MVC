@@ -39,7 +39,7 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
 
     public void loadUsers(){
         UserRegistrationDTO userOne = new UserRegistrationDTO();
-        userOne.setUsername("john");
+        userOne.setUsername("johnsmith");
         userOne.setFirstName("John");
         userOne.setLastName("Smith");
         userOne.setEmail("johnsmith@gmail.com");

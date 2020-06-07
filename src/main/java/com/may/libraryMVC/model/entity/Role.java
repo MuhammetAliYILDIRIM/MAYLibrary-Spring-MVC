@@ -17,7 +17,7 @@ public class Role {
     }
 
     public Role(String role_user) {
-        name=role_user;
+        name = role_user;
     }
 
     public Integer getId() {

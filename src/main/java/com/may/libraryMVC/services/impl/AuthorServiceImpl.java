@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -23,7 +24,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author saveOrEditAuthor(Author author) {
-        return   authorRepository.save(author);
+
+        return authorRepository.save(author);
 
     }
 
@@ -36,7 +38,11 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author getAuthorById(Integer id) {
 
-        return authorRepository.findById(id).get();
+        Optional<Author> author = authorRepository.findById(id);
+        if (author.isPresent())
+            return author.get();
+        else
+            throw new RuntimeException("Author cannot be founded!");
     }
 
     @Override
@@ -46,13 +52,15 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void deleteAuthor(Integer authorId) {
-        Author author = authorRepository.getOne(authorId);
+        Optional<Author> author = authorRepository.findById(authorId);
+        if (!author.isPresent()) {
+            throw new RuntimeException("Author cannot be founded!");
+        }
         bookRepository.findBooksByAuthorsId(authorId).forEach(book -> {
-            book.getAuthors().remove(author);
+            book.getAuthors().remove(author.get());
         });
         authorRepository.delete(authorRepository.getOne(authorId));
     }
-
 
 
 }

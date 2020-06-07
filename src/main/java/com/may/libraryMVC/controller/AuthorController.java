@@ -24,14 +24,14 @@ public class AuthorController {
 
     @RequestMapping({"", "list"})
     public String listAuthors(Model model,
-                              @PageableDefault(size = 10) @SortDefault("firstName")Pageable pageable) {
-       model.addAttribute("authorsPage",authorService.getAllAuthors(pageable));
+                              @PageableDefault(size = 10) @SortDefault("firstName") Pageable pageable) {
+        model.addAttribute("authorsPage", authorService.getAllAuthors(pageable));
 
         return "author/list";
     }
 
     @RequestMapping("/new")
-    public String newBook(Model model) {
+    public String newAuthor(Model model) {
         Author author = new Author();
         model.addAttribute("author", author);
 
@@ -40,7 +40,7 @@ public class AuthorController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String saveOrUpdateBook(Author author) {
+    public String saveOrUpdateAuthor(Author author) {
         Author savedAuthor = authorService.saveOrEditAuthor(author);
         return "redirect:author/show/" + savedAuthor.getId();
     }
@@ -51,20 +51,19 @@ public class AuthorController {
         return "author/show";
     }
 
-    @RequestMapping( params = {"edit"}, method = RequestMethod.POST)
-    public String editAuthor(Model model,@RequestParam(value = "edit") Integer authorId) {
-        model.addAttribute("author",authorService.getAuthorById(authorId));
+    @RequestMapping(params = {"edit"}, method = RequestMethod.POST)
+    public String editAuthor(Model model, @RequestParam(value = "edit") Integer authorId) {
+        model.addAttribute("author", authorService.getAuthorById(authorId));
         return "author/authorform";
 
     }
 
-    @RequestMapping( params = {"delete"}, method = RequestMethod.POST)
-    public String deleteAuthor(@RequestParam(value = "delete") Integer authorId){
+    @RequestMapping(params = {"delete"}, method = RequestMethod.POST)
+    public String deleteAuthor(@RequestParam(value = "delete") Integer authorId) {
         authorService.deleteAuthor(authorId);
 
         return "redirect:/author/list";
     }
-
 
 
 }

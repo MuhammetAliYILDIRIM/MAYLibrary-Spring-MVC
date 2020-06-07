@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    @RequestMapping({"/", "","home"})
+    @RequestMapping({"/", ""})
     public String login() {
-        return "/home";
+        return "home";
     }
-
 
 
 }
