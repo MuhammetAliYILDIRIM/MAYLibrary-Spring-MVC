@@ -1,6 +1,5 @@
 package com.may.libraryMVC.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.may.libraryMVC.model.entity.Author;
 import com.may.libraryMVC.model.entity.Book;
 import com.may.libraryMVC.services.AuthorService;
@@ -13,11 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -36,21 +32,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BookControllerTest {
     @Mock
     private BookService bookService;
-
     @Mock
     private AuthorService authorService;
-
     @InjectMocks
     private BookController bookController;
-
     private MockMvc mockMvc;
-
-    ObjectMapper om = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(bookController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(bookController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
     }
 
     @Test
@@ -59,7 +51,7 @@ public class BookControllerTest {
         List<Book> books = new ArrayList<>();
         books.add(new Book());
         books.add(new Book());
-        Page<Book> booksPage = new PageImpl<Book>(books);
+        Page<Book> booksPage = new PageImpl<>(books);
 
         when(bookService.getAllBooks(Mockito.any(Pageable.class))).thenReturn(booksPage);
         mockMvc.perform(get("/book/list"))
@@ -73,8 +65,7 @@ public class BookControllerTest {
         List<Book> books = new ArrayList<>();
         books.add(new Book());
         books.add(new Book());
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Book> booksPage = new PageImpl<Book>(books);
+        Page<Book> booksPage = new PageImpl<>(books);
         Integer authorId = 0;
 
         when(bookService.getBooksByAuthorId(eq(authorId), Mockito.any(Pageable.class))).thenReturn(booksPage);
@@ -96,8 +87,8 @@ public class BookControllerTest {
 
     @Test
     public void deleteBookTest() throws Exception {
-        Integer bookId = 0;
-        mockMvc.perform(post("/book/delete/" + bookId.toString()))
+        int bookId = 0;
+        mockMvc.perform(post("/book/delete/" + bookId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/book/list"));
     }
@@ -152,44 +143,29 @@ public class BookControllerTest {
 
     @Test
     public void borrowBookTest() throws Exception {
-        Integer borrowId = 0;
-        Principal principal = new Principal() {
-            @Override
-            public String getName() {
-                return "TEST_PRINCIPAL";
-            }
-        };
-        mockMvc.perform(get("/book/borrow/" + borrowId.toString()).principal(principal))
+        int borrowId = 0;
+        Principal principal = () -> "TEST_PRINCIPAL";
+        mockMvc.perform(get("/book/borrow/" + borrowId).principal(principal))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/book"));
     }
 
     @Test
     public void userCannotBorrowBookTest() throws Exception {
-        Integer borrowId = 0;
-        Principal principal = new Principal() {
-            @Override
-            public String getName() {
-                return "TEST_PRINCIPAL";
-            }
-        };
+        int borrowId = 0;
+        Principal principal = () -> "TEST_PRINCIPAL";
 
-        mockMvc.perform(get("/book/borrow/" + borrowId.toString()).principal(principal))
+        mockMvc.perform(get("/book/borrow/" + borrowId).principal(principal))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/book"));
     }
 
     @Test
     public void returnBookTest() throws Exception {
-        Integer returnId = 0;
-        Principal principal = new Principal() {
-            @Override
-            public String getName() {
-                return "TEST_PRINCIPAL";
-            }
-        };
+        int returnId = 0;
+        Principal principal = () -> "TEST_PRINCIPAL";
 
-        mockMvc.perform(get("/book/borrow/" + returnId.toString()).principal(principal))
+        mockMvc.perform(get("/book/borrow/" + returnId).principal(principal))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/book"));
     }

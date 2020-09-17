@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -29,20 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AuthorControllerTest {
 
+    ObjectMapper om = new ObjectMapper();
     @Mock
     private AuthorService authorService;
-
     @InjectMocks
     private AuthorController authorController;
-
     private MockMvc mockMvc;
-
-    ObjectMapper om = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(authorController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(authorController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
     }
 
     @Test
@@ -51,8 +48,7 @@ public class AuthorControllerTest {
         List<Author> authors = new ArrayList<>();
         authors.add(new Author());
         authors.add(new Author());
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Author> authorsPage = new PageImpl<Author>(authors);
+        Page<Author> authorsPage = new PageImpl<>(authors);
 
         when(authorService.getAllAuthors(any(Pageable.class))).thenReturn(authorsPage);
         mockMvc.perform(get("/author/list"))
@@ -107,9 +103,9 @@ public class AuthorControllerTest {
 
     @Test
     public void deleteAuthorTest() throws Exception {
-        Integer authorId = 0;
+        int authorId = 0;
         mockMvc.perform(post("/author")
-                .param("delete", authorId.toString()))
+                .param("delete", Integer.toString(authorId)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/author/list"));
     }

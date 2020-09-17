@@ -38,7 +38,8 @@ public class UserControllerTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(userController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
     }
 
     @Test
@@ -46,9 +47,9 @@ public class UserControllerTest {
         List<UserDTO> users = new ArrayList<>();
         users.add(new UserDTO());
         users.add(new UserDTO());
-        Page<UserDTO> usersPage = new PageImpl<UserDTO>(users);
+        Page<UserDTO> usersPage = new PageImpl<>(users);
 
-        when(userService.getAllUsers(Mockito.any(Pageable.class))).thenReturn((Page) usersPage);
+        when(userService.getAllUsers(Mockito.any(Pageable.class))).thenReturn(usersPage);
         mockMvc.perform(get("/admin/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/list"))
@@ -106,12 +107,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserProfileTest() throws Exception {
-        Principal principal = new Principal() {
-            @Override
-            public String getName() {
-                return "username";
-            }
-        };
+        Principal principal = () -> "username";
         when(userService.getUserByUsername(anyString())).thenReturn(new UserDTO());
 
         mockMvc.perform(get("/profile").principal(principal))

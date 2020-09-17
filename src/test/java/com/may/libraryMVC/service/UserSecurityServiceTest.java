@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,13 +22,27 @@ import static org.mockito.Mockito.when;
 
 public class UserSecurityServiceTest {
 
-    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
     private UserSecurityService userSecurityService;
+
+    public static User getUser() {
+        User user = new User();
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setUsername("username");
+        user.setId(0);
+        user.setFirstName("user");
+        user.setLastName("test");
+        user.setEmail("user@mail.com");
+        user.setRoles(Collections.singletonList(new Role("USER")));
+        user.setNonLocked(true);
+        user.setNonDeleted(true);
+        return user;
+    }
 
     @BeforeEach
     public void setup() {
@@ -40,37 +54,22 @@ public class UserSecurityServiceTest {
         String username = "username";
         User user = getUser();
         when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(user));
-        assertTrue(userSecurityService.loadUserByUsername(username) instanceof UserDetails);
+        assertNotNull(userSecurityService.loadUserByUsername(username));
         UserDetails userDetail = userSecurityService.loadUserByUsername(username);
         assertAll("userDetail",
                 () -> assertEquals(userDetail.getUsername(), username),
                 () -> assertEquals(userDetail.getUsername(), user.getUsername()),
                 () -> assertEquals(userDetail.getPassword(), user.getPassword())
         );
-        assertTrue(userDetail.getAuthorities().stream().allMatch(authority -> authority instanceof GrantedAuthority));
+        assertTrue(userDetail.getAuthorities().stream().allMatch(Objects::nonNull));
 
     }
 
     @Test
     public void mapRolesToAuthoritiesTest() {
         User user = getUser();
-        assertTrue(userSecurityService.mapRolesToAuthorities(user.getRoles()).stream().allMatch(grantedAuthority -> grantedAuthority instanceof GrantedAuthority));
+        assertTrue(userSecurityService.mapRolesToAuthorities(user.getRoles()).stream().allMatch(Objects::nonNull));
 
 
-    }
-
-
-    public static User getUser() {
-        User user = new User();
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setUsername("username");
-        user.setId(0);
-        user.setFirstName("user");
-        user.setLastName("test");
-        user.setEmail("user@mail.com");
-        user.setRoles(Arrays.asList(new Role("USER")));
-        user.setNonLocked(true);
-        user.setNonDeleted(true);
-        return user;
     }
 }

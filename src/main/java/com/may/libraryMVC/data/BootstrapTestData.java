@@ -37,7 +37,7 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
         loadAuthorsAndBooks();
     }
 
-    public void loadUsers(){
+    public void loadUsers() {
         UserRegistrationDTO userOne = new UserRegistrationDTO();
         userOne.setUsername("johnsmith");
         userOne.setFirstName("John");
@@ -57,7 +57,7 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
 
     }
 
-    public void loadAuthorsAndBooks(){
+    public void loadAuthorsAndBooks() {
         Author authorOne = new Author();
         authorOne.setFirstName("William");
         authorOne.setLastName("Shakespeare");
@@ -123,7 +123,7 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
         bookFour.setISBN("9780596229201");
         bookFour.setReleasesDate("1609");
         bookFour.setBookCategory(EDUCATION_BOOK);
-        bookFour.setAuthors(Arrays.asList(authorTwo,authorFour));
+        bookFour.setAuthors(Arrays.asList(authorTwo, authorFour));
         bookService.saveOrEditBook(bookFour);
 
         Book bookFive = new Book();
@@ -131,7 +131,7 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
         bookFive.setISBN("9780596009235");
         bookFive.setReleasesDate("1609");
         bookFive.setBookCategory(EDUCATION_BOOK);
-        bookFive.setAuthors(Arrays.asList(authorTwo,authorThree,authorFour));
+        bookFive.setAuthors(Arrays.asList(authorTwo, authorThree, authorFour));
         bookService.saveOrEditBook(bookFive);
 
         Book bookSix = new Book();
@@ -143,11 +143,12 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
         bookService.saveOrEditBook(bookSix);
 
         Book bookSeven = new Book();
-        bookSeven.setTitle("OCA/OCP Java SE 7 Programmer I & II Study Guide (Exams 1Z0-803 & 1Z0-804) (Certification Press)");
+        bookSeven.setTitle("OCA/OCP Java SE 7 Programmer I & II Study Guide (Exams 1Z0-803 & 1Z0-804) (Certification " +
+                "Press)");
         bookSeven.setISBN("9780596009223");
         bookSeven.setReleasesDate("1609");
         bookSeven.setBookCategory(EDUCATION_BOOK);
-        bookSeven.setAuthors(Arrays.asList(authorTwo,authorFour));
+        bookSeven.setAuthors(Arrays.asList(authorTwo, authorFour));
         bookService.saveOrEditBook(bookSeven);
 
 
@@ -182,8 +183,6 @@ public class BootstrapTestData implements ApplicationListener<ContextRefreshedEv
         bookEleven.setBookCategory(HISTORY);
         bookEleven.setAuthors(Arrays.asList(authorOne));
         bookService.saveOrEditBook(bookEleven);
-
-
 
 
     }

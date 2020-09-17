@@ -1,6 +1,6 @@
 package com.may.libraryMVC.model.dto;
 
-import com.may.libraryMVC.model.constant.FieldMatch;
+import com.may.libraryMVC.util.validator.FieldMatch;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class UserRegistrationDTO {
 
     @NotEmpty
-    @Size(min = 6,max = 20)
+    @Size(min = 6, max = 20)
     private String username;
 
     @NotEmpty
@@ -24,7 +24,7 @@ public class UserRegistrationDTO {
     private String lastName;
 
     @NotEmpty
-    @Size(min = 6,max = 20)
+    @Size(min = 6, max = 20)
     private String password;
 
     @NotEmpty

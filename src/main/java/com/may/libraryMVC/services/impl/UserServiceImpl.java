@@ -113,25 +113,19 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User cannot be founded!");
         }
         user.get().setNonLocked(true);
-       return userRepository.save(user.get());
+        return userRepository.save(user.get());
 
 
     }
 
     @Override
     public boolean isUsernameUsed(String username) {
-        if (userRepository.findUserByUsername(username).isPresent())
-            return true;
-        else
-            return false;
+        return userRepository.findUserByUsername(username).isPresent();
     }
 
     @Override
     public boolean isEmailUsed(String email) {
-        if (userRepository.findUserByEmail(email).isPresent())
-            return true;
-        else
-            return false;
+        return userRepository.findUserByEmail(email).isPresent();
     }
 
     @Override

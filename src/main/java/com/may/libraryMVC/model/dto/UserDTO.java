@@ -5,16 +5,11 @@ import com.may.libraryMVC.model.entity.Book;
 import java.util.List;
 
 public class UserDTO {
-    private String username;
-
-    private String firstName;
-
-    private String lastName;
-
     public boolean isNonLocked;
-
     public boolean isNonDeleted;
-
+    private String username;
+    private String firstName;
+    private String lastName;
     private String email;
 
     private List<Book> books;

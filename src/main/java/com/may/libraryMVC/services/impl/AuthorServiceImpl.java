@@ -56,9 +56,7 @@ public class AuthorServiceImpl implements AuthorService {
         if (!author.isPresent()) {
             throw new RuntimeException("Author cannot be founded!");
         }
-        bookRepository.findBooksByAuthorsId(authorId).forEach(book -> {
-            book.getAuthors().remove(author.get());
-        });
+        bookRepository.findBooksByAuthorsId(authorId).forEach(book -> book.getAuthors().remove(author.get()));
         authorRepository.delete(authorRepository.getOne(authorId));
     }
 

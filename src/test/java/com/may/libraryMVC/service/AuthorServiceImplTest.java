@@ -5,7 +5,6 @@ import com.may.libraryMVC.model.entity.Book;
 import com.may.libraryMVC.repositoy.AuthorRepository;
 import com.may.libraryMVC.repositoy.BookRepository;
 import com.may.libraryMVC.services.impl.AuthorServiceImpl;
-import com.may.libraryMVC.services.impl.BookServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,15 +15,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.may.libraryMVC.model.constant.BookCategory.HISTORY;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class AuthorServiceImplTest {
@@ -36,6 +34,26 @@ public class AuthorServiceImplTest {
 
     @InjectMocks
     private AuthorServiceImpl authorService;
+
+    public static Book getBook() {
+        Book book = new Book();
+        book.getAuthors().add(getAuthor());
+        book.setTitle("title");
+        book.setISBN("ISBN");
+        book.setBookCategory(HISTORY);
+        book.setReleasesDate("1900");
+
+        return book;
+    }
+
+    public static Author getAuthor() {
+        Author author = new Author();
+        author.setFirstName("Author");
+        author.setLastName("Test");
+        author.setLanguage("language");
+        author.setNationality("nationality");
+        return author;
+    }
 
     @BeforeEach
     public void setup() {
@@ -52,7 +70,7 @@ public class AuthorServiceImplTest {
     @Test
     public void getAllAuthorsWithPageTest() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Author> pageAuthors = new PageImpl<>(new ArrayList<Author>());
+        Page<Author> pageAuthors = new PageImpl<>(new ArrayList<>());
         when(authorRepository.findAll(pageable)).thenReturn(pageAuthors);
         assertEquals(pageAuthors, authorService.getAllAuthors(pageable));
     }
@@ -68,7 +86,7 @@ public class AuthorServiceImplTest {
     @Test
     public void givenWrongAuthorIdGetAuthorByIdTest() {
         Integer authorId = 0;
-        when(authorRepository.findById(authorId)).thenReturn(Optional.ofNullable(null));
+        when(authorRepository.findById(authorId)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> authorService.getAuthorById(authorId), "Author cannot be founded!");
     }
 
@@ -93,30 +111,8 @@ public class AuthorServiceImplTest {
     @Test
     public void givenWrongAuthorIdDeleteAuthorTest() {
         Integer authorId = 1;
-        Book book = getBook();
-        Author author = book.getAuthors().get(0);
-        when(authorRepository.findById(authorId)).thenReturn(Optional.ofNullable(null));
+        when(authorRepository.findById(authorId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> authorService.deleteAuthor(authorId), "Author cannot be founded!");
-    }
-
-    public static Book getBook() {
-        Book book = new Book();
-        book.getAuthors().add(getAuthor());
-        book.setTitle("title");
-        book.setISBN("ISBN");
-        book.setBookCategory(HISTORY);
-        book.setReleasesDate("1900");
-
-        return book;
-    }
-
-    public static Author getAuthor() {
-        Author author = new Author();
-        author.setFirstName("Author");
-        author.setLastName("Test");
-        author.setLanguage("language");
-        author.setNationality("nationality");
-        return author;
     }
 }

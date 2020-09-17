@@ -18,8 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 public class UserServiceImplTest {
 
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     @Mock
     private BookRepository bookRepository;
@@ -42,6 +42,19 @@ public class UserServiceImplTest {
 
 
     private UserServiceImpl userService;
+
+    public static User getUser() {
+        User user = new User();
+        user.setUsername("username");
+        user.setId(0);
+        user.setFirstName("user");
+        user.setLastName("test");
+        user.setEmail("user@mail.com");
+        user.setRoles(Collections.singletonList(new Role("USER")));
+        user.setNonLocked(true);
+        user.setNonDeleted(true);
+        return user;
+    }
 
     @BeforeEach
     public void setup() {
@@ -67,46 +80,44 @@ public class UserServiceImplTest {
 
         assertTrue(passwordEncoder.matches(userRegistrationDTO.getPassword(),
                 userService.saveOrEditUser(userRegistrationDTO).getPassword()));
-        assertEquals("USER",
-                userService.saveOrEditUser(userRegistrationDTO).getRoles().stream().findFirst().get().getName());
+        assertEquals("USER", userService.saveOrEditUser(userRegistrationDTO).getRoles().stream().findFirst().get().getName());
 
     }
 
     @Test
     public void getAllUsersTest() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page pageUsers = new PageImpl<User>(Arrays.asList(getUser()));
+        Page pageUsers = new PageImpl<>(Collections.singletonList(getUser()));
         when(userRepository.findAll(pageable)).thenReturn(pageUsers);
-        assertTrue(userService.getAllUsers(pageable) instanceof Page);
-        assertTrue(userService.getAllUsers(pageable).stream().allMatch(user -> user instanceof UserDTO));
+        assertNotNull(userService.getAllUsers(pageable));
+        assertTrue(userService.getAllUsers(pageable).stream().allMatch(Objects::nonNull));
     }
 
     @Test
     public void getUserByUsernameTest() {
         String username = "username";
         when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(getUser()));
-        assertTrue(userService.getUserByUsername(username) instanceof UserDTO);
+        assertNotNull(userService.getUserByUsername(username));
     }
 
     @Test
     public void givenWrongUsernameGetUserByUsernameTest() {
         String username = "wrongusernmame";
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.getUserByUsername(username), "User cannot be founded!");
     }
-
 
     @Test
     public void getUserByEmailTest() {
         String email = "user@email.com";
         when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(getUser()));
-        assertTrue(userService.getUserByEmail(email) instanceof UserDTO);
+        assertNotNull(userService.getUserByEmail(email));
     }
 
     @Test
     public void givenWrongEmailGetUserByEmailTest() {
         String email = "wronguser@email.com";
-        when(userRepository.findUserByEmail(email)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByEmail(email)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.getUserByEmail(email), "User cannot be founded!");
     }
 
@@ -122,7 +133,7 @@ public class UserServiceImplTest {
     @Test
     public void givenWrongUsernameDeleteUserTest() {
         String username = "wrongusername";
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.deleteUser(username), "User cannot be founded!");
 
     }
@@ -139,7 +150,7 @@ public class UserServiceImplTest {
     @Test
     public void givenWrongUsernameActivateUserTest() {
         String username = "wrongusername";
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.activateUser(username), "User cannot be founded!");
 
     }
@@ -156,7 +167,7 @@ public class UserServiceImplTest {
     @Test
     public void givenWrongUsernameBlockUserTest() {
         String username = "wrongusername";
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.blockUser(username), "User cannot be founded!");
 
     }
@@ -173,7 +184,7 @@ public class UserServiceImplTest {
     @Test
     public void givenWrongUsernameUnBlockUserTest() {
         String username = "wrongusername";
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> userService.unBlockUser(username), "User cannot be founded!");
 
     }
@@ -183,7 +194,7 @@ public class UserServiceImplTest {
         String username = "username";
         when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(getUser()));
         assertTrue(userService.isUsernameUsed(username));
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.empty());
         assertFalse(userService.isUsernameUsed(username));
 
     }
@@ -193,7 +204,7 @@ public class UserServiceImplTest {
         String email = "user@mail.com";
         when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(getUser()));
         assertTrue(userService.isEmailUsed(email));
-        when(userRepository.findUserByEmail(email)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findUserByEmail(email)).thenReturn(Optional.empty());
         assertFalse(userService.isEmailUsed(email));
 
     }
@@ -202,26 +213,12 @@ public class UserServiceImplTest {
     public void convertUserToUserDTOTest() {
         User user = getUser();
         user.setPassword(passwordEncoder.encode("password"));
-        assertTrue(userService.convertUserToUserDTO(user) instanceof UserDTO);
+        assertNotNull(userService.convertUserToUserDTO(user));
         assertThat(userService.convertUserToUserDTO(user))
                 .returns(user.getUsername(), UserDTO::getUsername)
                 .returns(user.getFirstName(), UserDTO::getFirstName)
                 .returns(user.getLastName(), UserDTO::getLastName)
                 .returns(user.getEmail(), UserDTO::getEmail);
-    }
-
-
-    public static User getUser() {
-        User user = new User();
-        user.setUsername("username");
-        user.setId(0);
-        user.setFirstName("user");
-        user.setLastName("test");
-        user.setEmail("user@mail.com");
-        user.setRoles(Arrays.asList(new Role("USER")));
-        user.setNonLocked(true);
-        user.setNonDeleted(true);
-        return user;
     }
 
 }

@@ -21,6 +21,10 @@ public class Book {
     private String releasesDate;
     private LocalDate returnDate;
     private BookCategory bookCategory;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private List<Author> authors = new ArrayList<>();
+    @ManyToOne
+    private User borrowedUser;
 
     public BookCategory getBookCategory() {
         return bookCategory;
@@ -29,12 +33,6 @@ public class Book {
     public void setBookCategory(BookCategory bookCategory) {
         this.bookCategory = bookCategory;
     }
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private List<Author> authors = new ArrayList<>();
-
-    @ManyToOne
-    private User borrowedUser;
 
     public Integer getId() {
         return id;

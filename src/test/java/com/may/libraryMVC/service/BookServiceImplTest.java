@@ -37,6 +37,26 @@ public class BookServiceImplTest {
     @InjectMocks
     private BookServiceImpl bookService;
 
+    public static Book getBook() {
+        Book book = new Book();
+        book.getAuthors().add(getAuthor());
+        book.setTitle("title");
+        book.setISBN("ISBN");
+        book.setBookCategory(HISTORY);
+        book.setReleasesDate("1900");
+
+        return book;
+    }
+
+    public static Author getAuthor() {
+        Author author = new Author();
+        author.setFirstName("Author");
+        author.setLastName("Test");
+        author.setLanguage("language");
+        author.setNationality("nationality");
+        return author;
+    }
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -52,7 +72,7 @@ public class BookServiceImplTest {
     @Test
     public void getAllBooksTest() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Book> pageBooks = new PageImpl<Book>(new ArrayList<>());
+        Page<Book> pageBooks = new PageImpl<>(new ArrayList<>());
         when(bookRepository.findAll(pageable)).thenReturn(pageBooks);
         assertEquals(pageBooks, bookService.getAllBooks(pageable));
     }
@@ -62,7 +82,7 @@ public class BookServiceImplTest {
         Integer authorId = 0;
         Author author = getAuthor();
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Book> pageBooks = new PageImpl<Book>(new ArrayList<>());
+        Page<Book> pageBooks = new PageImpl<>(new ArrayList<>());
         when(authorRepository.getOne(authorId)).thenReturn(author);
         when(bookRepository.findBooksByAuthors(author, pageable)).thenReturn(pageBooks);
         assertEquals(pageBooks, bookService.getBooksByAuthorId(authorId, pageable));
@@ -87,7 +107,7 @@ public class BookServiceImplTest {
     @Test
     public void givenWrongBookIdDeleteBookTest() {
         Integer bookId = 0;
-        when(bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(null));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> bookService.deleteBook(bookId), "Book cannot be founded!");
     }
 
@@ -123,7 +143,8 @@ public class BookServiceImplTest {
         when(bookRepository.findBooksByBorrowedUserId(user.getId())).thenReturn(borrowedBooks);
         when(bookRepository.getOne(bookId)).thenReturn(book);
         when(bookRepository.save(book)).thenReturn(book);
-        assertThrows(RuntimeException.class, () -> bookService.borrowBook(username, bookId), "You have already borrowed 3 books!");
+        assertThrows(RuntimeException.class, () -> bookService.borrowBook(username, bookId), "You have already " +
+                "borrowed 3 books!");
 
     }
 
@@ -139,29 +160,8 @@ public class BookServiceImplTest {
     public void givenWrongBookIdReturnBookTest() {
         Integer bookId = 0;
 
-        when(bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(null));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> bookService.returnBook(bookId), "Book cannot be founded!");
-    }
-
-
-    public static Book getBook() {
-        Book book = new Book();
-        book.getAuthors().add(getAuthor());
-        book.setTitle("title");
-        book.setISBN("ISBN");
-        book.setBookCategory(HISTORY);
-        book.setReleasesDate("1900");
-
-        return book;
-    }
-
-    public static Author getAuthor() {
-        Author author = new Author();
-        author.setFirstName("Author");
-        author.setLastName("Test");
-        author.setLanguage("language");
-        author.setNationality("nationality");
-        return author;
     }
 
 }

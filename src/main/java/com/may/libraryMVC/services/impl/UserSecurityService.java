@@ -30,11 +30,9 @@ public class UserSecurityService implements UserDetailsService {
             throw new UsernameNotFoundException("invalid username or password");
         }
 
-        org.springframework.security.core.userdetails.User user1 =
-                new org.springframework.security.core.userdetails.User(user.getUsername(),
-                        user.getPassword(), user.isNonDeleted(), true, true, user.isNonLocked(),
-                        mapRolesToAuthorities(user.getRoles()));
-        return user1;
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+                user.getPassword(), user.isNonDeleted(), true, true, user.isNonLocked(),
+                mapRolesToAuthorities(user.getRoles()));
     }
 
     public Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
