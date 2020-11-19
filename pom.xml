@@ -98,7 +98,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>may-mvc-library</finalName>
+        <finalName>library</finalName>
     </build>
 
 </project>
