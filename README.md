@@ -1,6 +1,6 @@
 # MAY Library
 ---------------------------	
-This project is an Spring MVC example. I used Spring Boot, Spring Security, Thymeleaf, Maven and H2 database in this project. 
+This project is an Spring MVC example. I used Spring MVC, Spring Security, Thymeleaf, Maven and H2 database in this project. 
 
 
 ## To get the code:
